@@ -1,0 +1,103 @@
+import java.util.Iterator;
+
+class MyArrayList<Anytype> implements Iterable<Anytype>
+{
+	private static final int DEFULTSIZE=10;	//默认的数组最大容量
+	private int theSize;		//数组大小
+	private Anytype [] theItems;		//数组
+	
+	public MyArrayList()
+	{
+		clear();
+	}
+	public void clear()		//清空，也是创建
+	{
+		theSize=0;
+		ensureCapcity(DEFULTSIZE);
+	}
+	public boolean isEmpty(){	//是否为空
+		return theSize==0;
+	}
+	public int getSize(){	//得到数组的大小
+		return theSize;
+	}
+	//得到idx处的值
+	public Anytype get(int idx){
+		if(idx<0||idx>theSize){		//越界抛出异常
+			throw new ArrayIndexOutOfBoundsException();
+		}
+		return theItems[idx];
+	}
+	//覆盖idx处的值
+	public void set(int idx,Anytype value){
+		if(idx<0||idx>theSize){		//越界抛出异常
+			throw new ArrayIndexOutOfBoundsException();
+		}
+		theItems[idx]=value;
+	}
+	//确保添加的时候不会越界，自动添加
+	@SuppressWarnings("unchecked")
+	public void ensureCapcity(int newCapcity){
+		if(newCapcity<theSize){
+			return ;
+		}
+		Anytype [] oldArray=theItems;
+		theItems=(Anytype []) new Object[newCapcity];
+		for(int i=0;i<getSize();i++){
+			theItems[i]=oldArray[i];
+		}
+	}
+	public void add(int idx,Anytype value){
+		if(theItems.length==getSize()){
+			ensureCapcity(getSize()*2+1);
+		}
+		for(int i=getSize()+1;i>idx;i--){
+			theItems[i]=theItems[i-1];
+		}
+		theItems[idx]=value;
+		theSize++;
+	}
+	public void add(Anytype value){
+		add(getSize(),value);
+	}
+	
+	public void remove(int idx){
+		if(idx<0||idx>theSize){
+			throw new ArrayIndexOutOfBoundsException();
+		}
+		for (int i=idx;i<theSize;i++){
+			theItems[i]=theItems[i+1];
+		}
+		theSize--;
+	}
+	
+	public void printItem(int idx){
+		System.out.println(theItems[idx]);
+	}
+	private class ArrayListIterator implements java.util.Iterator<Anytype>{
+		private int count=0;
+
+		@Override
+		public boolean hasNext() {
+			// TODO Auto-generated method stub
+			return count<theSize;
+		}
+
+		@Override
+		public Anytype next() {
+			// TODO Auto-generated method stub
+			return theItems[count++];
+		}
+
+		@Override
+		public void remove() {
+			// TODO Auto-generated method stub
+			MyArrayList.this.remove(--count);
+		}
+	}
+	@Override
+	public Iterator<Anytype> iterator() {
+		// TODO Auto-generated method stub
+		return new ArrayListIterator();		//就是用来调用内部类对象
+	}
+}
